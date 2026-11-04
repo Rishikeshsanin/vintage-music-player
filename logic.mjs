@@ -78,3 +78,21 @@ export function uniqueTracks(tracks){
 export function readStore(key,fallback){
   try{const v=JSON.parse(localStorage.getItem(key));return v??fallback;}catch{return fallback;}
 }
+
+export function normalizeAudius(track){
+  if(!track||typeof track!=="object"||!track.id||!track.title)return null;
+  if(track.is_streamable===false||track.isStreamable===false||track.is_streamable==="false")return null;
+  const id=String(track.id);
+  if(!/^[a-zA-Z0-9_-]{1,90}$/.test(id))return null;
+  const artist=track.user?.name||track.user?.handle||"Independent artist";
+  const artwork=track.artwork||{};
+  const image=artwork["480x480"]||artwork["1000x1000"]||artwork["150x150"]||"";
+  return {
+    id:"audius:"+id,kind:"audius",title:String(track.title).slice(0,120),
+    artist:String(artist).slice(0,120),artwork:safeImage(image),
+    album:String(track.genre||track.mood||"Open music").slice(0,70),
+    stream:"https://api.audius.co/v1/tracks/"+encodeURIComponent(id)+"/stream?app_name=SonoraVintagePlayer",
+    link:isHttpsUrl(track.permalink)?track.permalink:"",
+    source:"AUDIUS · FULL SONG",live:false
+  };
+}
