@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node dev-server.mjs",
     "test": "node --test",
-    "check": "node --check app.js && node --check logic.mjs && node --check api/radio.js && node --check api/catalog.js"
+    "check": "node --check app.js && node --check logic.mjs && node --check api/radio.js && node --check api/catalog.js && node --check api/audius.js"
   },
   "engines": {"node": ">=20"}
 }
