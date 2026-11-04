@@ -1,4 +1,4 @@
-import { DEVICE_INFO,SKINS,PLACEHOLDER,safeImage,safeAudio,normalizeRadio,normalizeCatalog,parseEmbedUrl,formatTime,uniqueTracks,readStore } from "./logic.mjs";
+import { DEVICE_INFO,SKINS,PLACEHOLDER,safeImage,safeAudio,normalizeRadio,normalizeCatalog,normalizeAudius,parseEmbedUrl,formatTime,uniqueTracks,readStore } from "./logic.mjs";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -8,9 +8,9 @@ audio.preload="none"; audio.volume=.75;
 const state = {
   device: DEVICE_INFO[readStore("sonora:device","ipod")] ? readStore("sonora:device","ipod"):"ipod",
   skin: SKINS[readStore("sonora:skin","pearl")] ? readStore("sonora:skin","pearl"):"pearl",
-  view:"discover",tab:"radio",results:[],queue:[],current:null,currentIndex:-1,
-  local:[],recent:readStore("sonora:recent",[]).filter(t=>t&&t.kind==="radio"&&safeAudio(t.stream)).slice(0,25),
-  favorites:readStore("sonora:favorites",[]).filter(t=>t&&["radio","catalog"].includes(t.kind)&&((t.kind==="radio"&&safeAudio(t.stream))||(t.kind==="catalog"&&t.link))).slice(0,100),
+  view:"discover",tab:"audius",results:[],queue:[],current:null,currentIndex:-1,
+  local:[],recent:readStore("sonora:recent",[]).filter(t=>t&&["radio","audius"].includes(t.kind)&&safeAudio(t.stream)).slice(0,25),
+  favorites:readStore("sonora:favorites",[]).filter(t=>t&&["radio","audius","catalog"].includes(t.kind)&&((["radio","audius"].includes(t.kind)&&safeAudio(t.stream))||(t.kind==="catalog"&&t.link))).slice(0,100),
   query:"", loading:false,shuffle:false,repeat:"off",ipodMenu:false,menuIndex:0,limit:12
 };
 let searchToken=0, toastTimeout=null, pointerAngle=null, turnSum=0;
@@ -22,7 +22,6 @@ function toast(message){
 function setDevice(device){
   if(!DEVICE_INFO[device])return;
   state.device=device;document.body.dataset.device=device;persist("device",device);
-  $$("#deviceYear").forEach(()=>{});
   $("#deviceYear").textContent="EST. "+DEVICE_INFO[device].year;
   $("#deviceDescription").textContent=DEVICE_INFO[device].description;
   $("#showcaseCaption").textContent=DEVICE_INFO[device].name.toUpperCase()+" / PERSONAL EDITION";
@@ -53,16 +52,22 @@ function setView(view){
   if(view!=="discover")$("#browseSection").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function setTab(tab){
-  if(!["radio","catalog","files","embeds"].includes(tab))return;
+  if(!["audius","radio","catalog","files","embeds"].includes(tab))return;
   state.tab=tab;state.view="discover";
   $$(".source-tab").forEach(b=>{const selected=b.dataset.tab===tab;b.classList.toggle("active",selected);b.setAttribute("aria-selected",String(selected));});
   $("#searchControls").hidden=tab==="files"||tab==="embeds";
-  $("#trendingSearch").hidden=tab!=="radio"&&tab!=="catalog";
+  $("#trendingSearch").hidden=tab!=="audius"&&tab!=="radio"&&tab!=="catalog";
   $("#filesPanel").hidden=tab!=="files";$("#embedsPanel").hidden=tab!=="embeds";
-  $("#musicSearch").placeholder=tab==="catalog"?"Search artists, songs, albums...":"Search stations, genres, moods...";
-  $("#trendingSearch").innerHTML=tab==="radio"?'<span>TRY:</span><button type="button" data-quick-search="lofi">lofi beats</button><button type="button" data-quick-search="jazz">late night jazz</button><button type="button" data-quick-search="80s">80s classics</button><button type="button" data-quick-search="bollywood">bollywood</button>':'<span>TRY:</span><button type="button" data-quick-search="A R Rahman">A R Rahman</button><button type="button" data-quick-search="Daft Punk">Daft Punk</button><button type="button" data-quick-search="The Weeknd">The Weeknd</button>';
+  $("#musicSearch").placeholder=tab==="catalog"?"Search artists, songs, albums...":tab==="audius"?"Search full songs, artists, genres...":"Search stations, genres, moods...";
+  const suggestions={
+    audius:'<span>TRY:</span><button type="button" data-quick-search="lofi">lofi beats</button><button type="button" data-quick-search="indie">indie artists</button><button type="button" data-quick-search="electronic">electronic</button><button type="button" data-quick-search="chill">chill</button>',
+    radio:'<span>TRY:</span><button type="button" data-quick-search="lofi">lofi beats</button><button type="button" data-quick-search="jazz">late night jazz</button><button type="button" data-quick-search="80s">80s classics</button><button type="button" data-quick-search="bollywood">bollywood</button>',
+    catalog:'<span>TRY:</span><button type="button" data-quick-search="A R Rahman">A R Rahman</button><button type="button" data-quick-search="Daft Punk">Daft Punk</button><button type="button" data-quick-search="The Weeknd">The Weeknd</button>'
+  };
+  $("#trendingSearch").innerHTML=suggestions[tab]||"";
   state.results=[];state.limit=12;
   setView("discover");
+  if(tab==="audius") searchMusic($("#musicSearch").value.trim()||"lofi");
   if(tab==="radio") searchMusic($("#musicSearch").value.trim()||"lofi");
   if(tab==="catalog") searchMusic($("#musicSearch").value.trim()||"A R Rahman");
   if(tab==="files"||tab==="embeds")renderResults();
@@ -85,7 +90,7 @@ async function fetchApi(url,fallback){
 async function searchMusic(term){
   if(!term)return;
   const source=state.tab;
-  if(source!=="radio"&&source!=="catalog")return;
+  if(!["radio","catalog","audius"].includes(source))return;
   const token=++searchToken;
   state.query=term;state.loading=true;state.results=[];state.limit=12;
   $("#musicSearch").value=term;renderResults();
@@ -96,10 +101,14 @@ async function searchMusic(term){
       data=await fetchApi("/api/radio?q="+q,"https://de1.api.radio-browser.info/json/stations/search?name="+q+"&hidebroken=true&order=votes&reverse=true&limit=40");
       if(token!==searchToken)return;
       state.results=uniqueTracks((Array.isArray(data)?data:[]).map(normalizeRadio).filter(Boolean)).slice(0,35);
-    }else{
+    }else if(source==="catalog"){
       data=await fetchApi("/api/catalog?q="+q,"https://itunes.apple.com/search?term="+q+"&country=IN&media=music&entity=song&limit=32");
       if(token!==searchToken)return;
       state.results=uniqueTracks((Array.isArray(data)?data:(data.results||[])).map(normalizeCatalog).filter(Boolean)).slice(0,35);
+    }else if(source==="audius"){
+      data=await fetchApi("/api/audius?q="+q,"https://api.audius.co/v1/tracks/search?query="+q+"&app_name=SonoraVintagePlayer&limit=35");
+      if(token!==searchToken)return;
+      state.results=uniqueTracks((Array.isArray(data)?data:(data.data||[])).map(normalizeAudius).filter(Boolean)).slice(0,35);
     }
   }catch(error){
     if(token!==searchToken)return;
@@ -152,12 +161,12 @@ function updateTime(){
   $("#discmanCounter").textContent=live?"LIVE":formatTime(elapsed);
 }
 function saveRecent(track){
-  if(track.kind!=="radio")return;
+  if(!["radio","audius"].includes(track.kind))return;
   state.recent=[track,...state.recent.filter(t=>t.id!==track.id)].slice(0,25);
   persist("recent",state.recent);
 }
 function setQueueItem(track,{play=true}={}){
-  if(!track||!["radio","file"].includes(track.kind))return;
+  if(!track||!["radio","audius","file"].includes(track.kind))return;
   let index=state.queue.findIndex(t=>t.id===track.id);
   if(index<0){state.queue.push(track);index=state.queue.length-1;}
   updateCounts();renderQueuePreview();
@@ -166,7 +175,7 @@ function setQueueItem(track,{play=true}={}){
 }
 async function playAt(index){
   const track=state.queue[index];if(!track)return;
-  if(track.kind!=="file"&&track.kind!=="radio")return;
+  if(!["file","radio","audius"].includes(track.kind))return;
   const src=safeAudio(track.stream);if(!src){toast("This audio stream is not supported.");return;}
   state.current=track;state.currentIndex=index;
   audio.pause();audio.src=src;audio.load();
@@ -176,7 +185,7 @@ async function playAt(index){
 }
 async function toggle(){
   if(!state.current){
-    if(!state.queue.length){toast("Choose a radio station or add your music first.");return;}
+    if(!state.queue.length){toast("Pick a full song, radio station or local file first.");return;}
     await playAt(0);return;
   }
   if(audio.paused){try{await audio.play();}catch{toast("This stream cannot be played in your browser.");}}
@@ -241,7 +250,7 @@ function rowMarkup(track,index){
   const fav=state.favorites.some(t=>t.id===track.id);
   const catalog=track.kind==="catalog";
   const queueView=state.view==="queue";
-  const label=catalog?"CATALOG":track.live?"LIVE":track.kind==="file"?"YOUR FILE":"RADIO";
+  const label=catalog?"CATALOG":track.live?"LIVE":track.kind==="file"?"YOUR FILE":track.kind==="audius"?"FULL SONG":"RADIO";
   const primary=catalog?
     '<a class="row-link" href="'+htmlSafe(track.link)+'" target="_blank" rel="noopener noreferrer" title="Open in Apple Music">APPLE ↗</a>':
     '<button type="button" class="row-play" data-row-action="play" data-track-id="'+htmlSafe(track.id)+'" aria-label="Play '+htmlSafe(track.title)+'">'+(chosen&&!audio.paused?"Ⅱ":"▶")+'</button>';
