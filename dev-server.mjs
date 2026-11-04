@@ -5,9 +5,10 @@ import {resolve,extname} from "node:path";
 import radio from "./api/radio.js";
 import catalog from "./api/catalog.js";
 import health from "./api/health.js";
+import audius from "./api/audius.js";
 const root=process.cwd(),port=Number(process.env.PORT||4173);
 const types={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".svg":"image/svg+xml",".json":"application/json"};
-const handlers={"/api/radio":radio,"/api/catalog":catalog,"/api/health":health};
+const handlers={"/api/radio":radio,"/api/catalog":catalog,"/api/health":health,"/api/audius":audius};
 createServer(async(req,res)=>{
   const url=new URL(req.url||"/","http://localhost");
   if(handlers[url.pathname]){
