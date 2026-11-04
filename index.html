@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4ed">
+  <meta name="description" content="SONORA — a nostalgic music listening room. Five retro players, internet radio, your own music and official music embeds.">
+  <title>SONORA — Your music, another era</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fraunces:opsz,wght,SOFT,WONK@9..144,600,70,1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body data-device="ipod" data-skin="pearl">
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="SONORA homepage">
+        <span class="brand-symbol" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>sonora<span class="brand-period">.</span></span>
+      </a>
+      <div class="side-caption">YOUR PERSONAL TIME MACHINE</div>
+      <nav class="side-nav" aria-label="Sections">
+        <button class="nav-link active" type="button" data-view="discover"><span class="nav-icon">✳</span> Discover <span class="nav-trail">↗</span></button>
+        <button class="nav-link" type="button" data-view="library"><span class="nav-icon">♫</span> My library <span id="libraryCount" class="nav-count">0</span></button>
+        <button class="nav-link" type="button" data-view="favorites"><span class="nav-icon">♡</span> Favorites <span id="favoriteCount" class="nav-count">0</span></button>
+        <button class="nav-link" type="button" data-view="queue"><span class="nav-icon">≡</span> Play queue <span id="queueCount" class="nav-count">0</span></button>
+      </nav>
+      <div class="side-divider"></div>
+      <div class="side-group-heading">PICK YOUR PLAYER <span>05</span></div>
+      <div class="device-list" role="group" aria-label="Vintage player design">
+        <button type="button" class="device-choice selected" data-set-device="ipod"><span class="device-emoji">◩</span><span>iPod Classic<small>2001 · the original icon</small></span><span class="device-check">●</span></button>
+        <button type="button" class="device-choice" data-set-device="walkman"><span class="device-emoji">▤</span><span>Cassette Walkman<small>1979 · rewind &amp; repeat</small></span><span class="device-check">●</span></button>
+        <button type="button" class="device-choice" data-set-device="discman"><span class="device-emoji">◎</span><span>CD Discman<small>1984 · compact magic</small></span><span class="device-check">●</span></button>
+        <button type="button" class="device-choice" data-set-device="vinyl"><span class="device-emoji">◉</span><span>Vinyl Turntable<small>1970s · analog soul</small></span><span class="device-check">●</span></button>
+        <button type="button" class="device-choice" data-set-device="boombox"><span class="device-emoji">▣</span><span>Retro Boombox<small>1980s · street legend</small></span><span class="device-check">●</span></button>
+      </div>
+      <div class="side-bottom">
+        <span class="status-led"></span> NO ACCOUNT. JUST MUSIC.
+        <a href="https://github.com/Rishikeshsanin/vintage-music-player" target="_blank" rel="noopener noreferrer" aria-label="Open source on GitHub">↗</a>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb">THE LISTENING ROOM <span>/</span> <strong id="breadcrumbView">DISCOVER</strong></div>
+        <div class="top-actions">
+          <span class="top-note">✦ MADE FOR THE LOVE OF MUSIC</span>
+          <span class="local-clock" id="localClock" aria-label="Local time">--:--</span>
+          <button id="infoButton" type="button" class="circle-icon-button" aria-label="About playback sources" title="About music sources">?</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <div>
+            <div class="eyebrow"><span class="eyebrow-star">✳</span> THE GOOD OLD DAYS, ON REPEAT</div>
+            <h1>Your music.<br><em>Another era.</em></h1>
+            <p>All the nostalgia of your favorite music players. None of the tangled earphone wires.</p>
+            <div class="hero-chips"><span>✺ 5 iconic players</span><span>◉ live worldwide radio</span><span>♫ your own library</span></div>
+          </div>
+          <div class="hero-decoration" aria-hidden="true"><span class="orbit orbit-one"></span><span class="orbit orbit-two"></span><div class="hero-disc"><span class="hero-disc-inner"></span></div><span class="hero-sparkle">✦</span></div>
+        </section>
+
+        <section class="player-layout" aria-label="Music player">
+          <div class="player-panel">
+            <div class="section-label-row"><div><span class="section-kicker">01 / THE PLAYER</span><h2>Meet your old friend <span class="little-spark">✳</span></h2></div><span class="generation-pill" id="deviceYear">EST. 2001</span></div>
+            <div class="showcase">
+              <div class="showcase-topline"><span class="showcase-dots"><b></b><b></b><b></b></span><span id="showcaseCaption">A LITTLE PIECE OF HISTORY</span><span>✦</span></div>
+              <div class="device-stage">
+                <div class="stage-halo" aria-hidden="true"></div>
+                <div class="device ipod" aria-label="Interactive iPod Classic">
+                  <div class="ipod-screen">
+                    <div class="screen-top"><b>sonora</b><span id="screenState">♫</span><span class="battery">▰▰▱</span></div>
+                    <div id="ipodNowScreen" class="screen-page">
+                      <div class="screen-now"><img id="ipodArt" src="/placeholder.svg" alt="Current album artwork"><div class="screen-track"><small>NOW PLAYING</small><strong class="track-title-sync">Your next favorite song</strong><span class="track-artist-sync">A world of music awaits</span></div></div>
+                      <div class="screen-progress"><div class="screen-progress-rail"><span id="screenProgress"></span></div><div><span class="time-current">0:00</span><span class="time-duration">0:00</span></div></div>
+                    </div>
+                    <div id="ipodMenuScreen" class="screen-page screen-menu" hidden><div class="screen-menu-header">Music <span>♫</span></div><div id="ipodMenuItems"></div><div class="screen-menu-footer">Use the wheel to browse</div></div>
+                  </div>
+                  <div class="click-wheel" id="clickWheel" aria-label="iPod scroll wheel">
+                    <button class="wheel-button wheel-menu" id="wheelMenu" type="button">MENU</button>
+                    <button class="wheel-button wheel-back" id="wheelPrevious" type="button" aria-label="Previous track">◀◀</button>
+                    <button class="wheel-button wheel-next" id="wheelNext" type="button" aria-label="Next track">▶▶</button>
+                    <button class="wheel-button wheel-play" id="wheelPlay" type="button" aria-label="Play or pause">▶Ⅱ</button>
+                    <button class="wheel-center" id="wheelSelect" type="button" aria-label="Select highlighted item"></button>
+                  </div>
+                </div>
+
+                <div class="device walkman" aria-label="Cassette Walkman player">
+                  <div class="walkman-edge">STEREO CASSETTE PLAYER <span>SONORA / 79</span></div>
+                  <div class="cassette-door">
+                    <div class="cassette-top"><span>SONORA</span><span>✦ MEGA BASS</span></div>
+                    <div class="cassette-body">
+                      <div class="tape-line"></div>
+                      <div class="spool spool-left"><i></i></div><div class="tape-center"><span>NOW PLAYING</span><strong class="track-title-sync">Your next favorite song</strong></div><div class="spool spool-right"><i></i></div>
+                    </div>
+                    <div class="cassette-lower"><span>SIDE A</span><span class="track-artist-sync">A world of music awaits</span><span>60</span></div>
+                  </div>
+                  <div class="walkman-controlbar"><button type="button" data-action="previous" aria-label="Previous track">◀◀</button><button type="button" data-action="toggle" aria-label="Play or pause">▶ / Ⅱ</button><button type="button" data-action="next" aria-label="Next track">▶▶</button><span>STEREO ◀ L / R ▶</span></div>
+                </div>
+
+                <div class="device discman" aria-label="Portable CD player">
+                  <div class="discman-shell"><div class="discman-logo">SONORA <small>COMPACT DISC DIGITAL AUDIO</small></div><div class="cd-ring"><div class="cd-disc"><div class="cd-label"><b>SONORA</b><small>COMPACT DISC</small><strong>◉</strong></div></div></div><div class="discman-led"><span id="discmanCounter">00:00</span><span>ESP ● ON</span></div></div>
+                  <div class="discman-controls"><button type="button" data-action="previous" aria-label="Previous track">◀◀</button><button type="button" data-action="toggle" aria-label="Play or pause">▶ / Ⅱ</button><button type="button" data-action="next" aria-label="Next track">▶▶</button></div>
+                </div>
+
+                <div class="device vinyl" aria-label="Vinyl record player">
+                  <div class="turntable"><span class="turntable-wordmark">SONORA <small>HI-FIDELITY STEREO / 33⅓ RPM</small></span><div class="record-platter"><div class="record-grooves"><div class="record-label"><span>SONORA RECORDS</span><strong>33⅓</strong><small class="track-title-sync">Your next favorite song</small></div></div></div><div class="tonearm"><span class="tonearm-joint"></span><span class="tonearm-bar"></span><span class="tonearm-head"></span></div><div class="turntable-switch"><span>POWER</span><span class="switch-led"></span><span>33 / 45</span></div></div>
+                  <div class="turntable-controls"><button type="button" data-action="previous" aria-label="Previous track">◀◀</button><button type="button" data-action="toggle" aria-label="Play or pause">▶ / Ⅱ</button><button type="button" data-action="next" aria-label="Next track">▶▶</button></div>
+                </div>
+
+                <div class="device boombox" aria-label="Vintage boombox">
+                  <div class="boombox-handle"></div><div class="boombox-body"><div class="boombox-header">SONORA <span>SUPER STEREO · 1986</span></div><div class="boombox-inner"><div class="boombox-speaker"><span></span></div><div class="boombox-center"><div class="boombox-eq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="boombox-display"><span>FM STEREO</span><strong class="track-title-sync">Your next favorite song</strong><small class="track-artist-sync">A world of music awaits</small></div><div class="boombox-buttons"><button type="button" data-action="previous" aria-label="Previous track">◀◀</button><button type="button" data-action="toggle" aria-label="Play or pause">▶Ⅱ</button><button type="button" data-action="next" aria-label="Next track">▶▶</button></div></div><div class="boombox-speaker"><span></span></div></div><div class="boombox-base">AUTO REVERSE · DOLBY NR <span>✦</span> HIGH FIDELITY</div></div>
+                </div>
+              </div>
+              <div class="showcase-footer"><span>↖ <span id="deviceDescription">THE ONE THAT STARTED IT ALL</span></span><span id="skinLabel">PEARL WHITE / 01</span></div>
+            </div>
+            <div class="colorways"><span>CHOOSE A COLORWAY</span><div class="swatch-list" role="group" aria-label="Player colorway"><button type="button" data-set-skin="pearl" class="swatch active" aria-label="Pearl white" title="Pearl white" style="--swatch:#e9e7e4"></button><button type="button" data-set-skin="midnight" class="swatch" aria-label="Midnight navy" title="Midnight navy" style="--swatch:#333d59"></button><button type="button" data-set-skin="blush" class="swatch" aria-label="Blush pink" title="Blush pink" style="--swatch:#e6a3ab"></button><button type="button" data-set-skin="mint" class="swatch" aria-label="Vintage mint" title="Vintage mint" style="--swatch:#98b8ad"></button><button type="button" data-set-skin="orange" class="swatch" aria-label="Sunset orange" title="Sunset orange" style="--swatch:#d77b4f"></button></div><small>make it yours ✳</small></div>
+          </div>
+
+          <div class="right-stack">
+            <section class="now-playing-card">
+              <div class="mini-heading"><span>✳ ON THE TURNTABLE</span><span class="equalizer" id="eqBadge" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
+              <div class="np-artwork"><img id="nowArtwork" src="/placeholder.svg" alt="Now playing artwork"><span class="np-art-corner">✦</span></div>
+              <div class="np-copy"><div class="small-upper" id="nowSource">READY WHEN YOU ARE</div><h3 id="nowTitle">Press play on a memory.</h3><p id="nowArtist">Find a radio station or add music from your computer.</p></div>
+              <div class="np-progress"><input id="seekbar" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek through track"><div><span class="time-current">0:00</span><span class="time-duration">0:00</span></div></div>
+              <div class="np-controls"><button id="shuffleButton" type="button" class="transport-sub" aria-label="Shuffle" title="Shuffle">⤨</button><button type="button" data-action="previous" class="transport" aria-label="Previous track">◀◀</button><button type="button" data-action="toggle" id="mainPlay" class="main-play" aria-label="Play">▶</button><button type="button" data-action="next" class="transport" aria-label="Next track">▶▶</button><button id="repeatButton" type="button" class="transport-sub" aria-label="Repeat mode" title="Repeat">↻</button></div>
+              <div class="volume-row"><span>◖</span><input type="range" min="0" max="100" value="75" id="volumeControl" aria-label="Volume"><span>◖))</span><button type="button" id="nowFavorite" class="favorite-heart" aria-label="Add current track to favorites">♡</button></div>
+            </section>
+            <section class="queue-preview-card"><div class="queue-heading"><div><span class="section-kicker">NEXT ON THE LIST</span><h3>Up next <span>↗</span></h3></div><button type="button" id="clearQueue">Clear</button></div><div id="queuePreview" class="queue-items"><div class="empty-mini">Your mixtape is waiting to happen.</div></div><button type="button" class="queue-more" data-view="queue">VIEW FULL QUEUE <span>→</span></button></section>
+          </div>
+        </section>
+
+        <section class="browse-section" id="browseSection">
+          <div class="browse-heading"><div><span class="section-kicker">02 / FIND YOUR SOUND</span><h2 id="browseTitle">A world of music awaits<span class="accent-dot">.</span></h2></div><span id="resultsCount" class="results-count">THE DISCOVERY DESK</span></div>
+          <div id="discoverControls">
+            <div class="source-tabs" role="tablist" aria-label="Music source"><button type="button" class="source-tab active" role="tab" aria-selected="true" data-tab="radio">◉ Live radio</button><button type="button" class="source-tab" role="tab" aria-selected="false" data-tab="catalog">♫ Discover songs</button><button type="button" class="source-tab" role="tab" aria-selected="false" data-tab="files">▣ My audio files</button><button type="button" class="source-tab" role="tab" aria-selected="false" data-tab="embeds">↗ Music links</button></div>
+            <div id="searchControls" class="searchbox"><label for="musicSearch" class="sr-only">Search music</label><span class="search-icon">⌕</span><input id="musicSearch" type="search" autocomplete="off" placeholder="Search stations, genres, artists..." maxlength="80"><button id="searchButton" type="button">SEARCH <span>↗</span></button></div>
+            <div id="trendingSearch" class="quick-search"><span>TRY:</span><button type="button" data-quick-search="lofi">lofi beats</button><button type="button" data-quick-search="jazz">late night jazz</button><button type="button" data-quick-search="80s">80s classics</button><button type="button" data-quick-search="bollywood">bollywood</button></div>
+            <div id="filesPanel" class="special-panel" hidden><div class="panel-icon">♫</div><div><h3>Your music, your rules.</h3><p>Choose MP3, M4A, WAV or other browser-supported audio files. They stay on your device and are never uploaded.</p><label class="upload-button" for="localFiles">+ ADD YOUR MUSIC</label><input type="file" id="localFiles" accept="audio/*,.mp3,.m4a,.wav,.ogg,.flac" multiple hidden></div></div>
+            <div id="embedsPanel" class="special-panel embed-panel" hidden><div><div class="panel-icon">↗</div><h3>Bring your music links.</h3><p>Paste a Spotify, YouTube or SoundCloud link to open the official player here. Playback stays inside their own player.</p><div class="embed-entry"><label for="externalUrl" class="sr-only">Music link</label><input id="externalUrl" type="url" placeholder="https://open.spotify.com/track/..."><button type="button" id="embedButton">OPEN PLAYER ↗</button></div><div class="embed-provider-logos">SPOTIFY <span>✳</span> YOUTUBE <span>✳</span> SOUNDCLOUD</div></div><div id="embedFrame" class="embed-frame"></div></div>
+          </div>
+          <div id="results" class="results-list" aria-live="polite"><div class="empty-results">The world is yours to explore. Search for a radio station to begin. ✳</div></div>
+          <div id="loadMoreWrap" class="load-more" hidden><button type="button" id="loadMore">SHOW MORE ↓</button></div>
+        </section>
+      </main>
+      <footer class="footer"><span>© 2026 SONORA / BUILT FOR THE LOVE OF MUSIC.</span><span>NO PIRACY. NO PAYWALLS HERE. JUST GOOD VIBRATIONS. ✳</span></footer>
+    </div>
+  </div>
+  <div class="toast" role="status" id="toast" aria-live="polite"></div>
+  <dialog id="sourceDialog" class="source-dialog"><form method="dialog"><button type="submit" class="dialog-close" aria-label="Close">✕</button></form><div class="eyebrow">✳ THE FINE PRINT</div><h2>Music, the right way.</h2><p><strong>Live radio</strong> uses station streams indexed by Radio Browser. Stations can occasionally go offline or restrict playback.</p><p><strong>My audio files</strong> plays files directly in your browser; nothing is uploaded or stored on a server.</p><p><strong>Discover songs</strong> searches Apple's catalog for artwork, artist and store links; it does not stream copyrighted tracks.</p><p><strong>Music links</strong> opens official Spotify, YouTube and SoundCloud embeds. Those services control availability and may require login or restrict playback. Device controls operate local files and radio, not external embeds.</p><p class="dialog-footnote">Your colorway, player and favorite radio stations are remembered in this browser. No account or secret API keys required.</p></dialog>
+</body></html>
