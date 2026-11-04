@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {DEVICE_INFO,SKINS,formatTime,parseEmbedUrl,normalizeRadio,normalizeCatalog,safeAudio,safeImage,uniqueTracks} from "../logic.mjs";
+import {DEVICE_INFO,SKINS,formatTime,parseEmbedUrl,normalizeRadio,normalizeCatalog,normalizeAudius,safeAudio,safeImage,uniqueTracks} from "../logic.mjs";
 
 test("five player choices and five colorways",()=>{
   assert.deepEqual(Object.keys(DEVICE_INFO),["ipod","walkman","discman","vinyl","boombox"]);
@@ -54,4 +54,14 @@ test("SoundCloud uses official widget, not arbitrary iframe URLs",()=>{
 test("dedupe keeps original order",()=>{
   assert.deepEqual(uniqueTracks([{id:"a"},{id:"b"},{id:"a"},null]).map(x=>x.id),["a","b"]);
   assert.equal(safeImage("data:image/svg+xml,evil"),"/placeholder.svg");
+});
+
+test("Audius supports licensed full-song streams without previews",()=>{
+  const t=normalizeAudius({id:"ABcd123",title:"Daydream",user:{name:"Indie Star"},is_streamable:true,artwork:{"480x480":"https://cdn.example.com/art.jpg"}});
+  assert.equal(t.kind,"audius");
+  assert.equal(t.live,false);
+  assert.equal(t.title,"Daydream");
+  assert.ok(t.stream.includes("/tracks/ABcd123/stream?app_name=SonoraVintagePlayer"));
+  assert.equal(normalizeAudius({id:"bad/id",title:"Unsafe"}),null);
+  assert.equal(normalizeAudius({id:"ABcd123",title:"Unavailable",is_streamable:false}),null);
 });
