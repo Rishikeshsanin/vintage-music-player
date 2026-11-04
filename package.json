@@ -1,0 +1,13 @@
+{
+  "name": "sonora-vintage-music-player",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A nostalgic five-device listening room with legal music sources.",
+  "scripts": {
+    "dev": "node dev-server.mjs",
+    "test": "node --test",
+    "check": "node --check app.js && node --check logic.mjs && node --check api/radio.js && node --check api/catalog.js && node --check api/audius.js"
+  },
+  "engines": {"node": ">=20"}
+}
