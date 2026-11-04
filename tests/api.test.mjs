@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import radio from "../api/radio.js";
 import catalog from "../api/catalog.js";
 import health from "../api/health.js";
+import audius from "../api/audius.js";
 function mockRes(){
   return {statusCode:200,headers:{},payload:null,
     setHeader(k,v){this.headers[k]=v;return this;},
@@ -15,10 +16,10 @@ test("health endpoint exposes no secrets and reports supported sources",()=>{
   health({method:"GET"},res);
   assert.equal(res.statusCode,200);
   assert.equal(res.payload.ok,true);
-  assert.deepEqual(res.payload.sources,["radio-browser","itunes-catalog","local-files","official-embeds"]);
+  assert.deepEqual(res.payload.sources,["audius","radio-browser","itunes-catalog","local-files","official-embeds"]);
 });
 test("catalog and radio reject unsupported HTTP methods",async()=>{
-  for(const handler of [radio,catalog]){
+  for(const handler of [radio,catalog,audius]){
     const res=mockRes();
     await handler({method:"POST",query:{q:"rock"}},res);
     assert.equal(res.statusCode,405);
