@@ -1,0 +1,33 @@
+name: Sonora CI
+on:
+  push:
+    branches: [main, feature/sonora-retro-player-v1]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: npm run check
+      - name: Run unit tests
+        run: npm test
+      - name: Start server and verify local pages and API
+        run: |
+          node dev-server.mjs > /tmp/sonora.log 2>&1 &
+          sleep 2
+          curl --fail --silent http://localhost:4173/ | grep -q "SONORA"
+          curl --fail --silent http://localhost:4173/logic.mjs | grep -q "DEVICE_INFO"
+          curl --fail --silent http://localhost:4173/api/health | grep -q '"ok":true'
+          if curl --fail --silent http://localhost:4173/does-not-exist; then exit 1; fi
