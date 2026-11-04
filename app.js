@@ -83,7 +83,7 @@ async function fetchApi(url,fallback){
   }finally{clearTimeout(timer);}
 }
 async function searchMusic(term){
-  if(!term||state.loading)return;
+  if(!term)return;
   const source=state.tab;
   if(source!=="radio"&&source!=="catalog")return;
   const token=++searchToken;
